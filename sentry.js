@@ -1,5 +1,7 @@
+/* eslint-disable no-console */
 require("dotenv").config();
 
+let pkg = require("./package.json");
 let fetch = require("node-fetch");
 let SentryCli = require("@sentry/cli");
 let { promisify } = require("util");
@@ -11,7 +13,7 @@ async function parseLog(from, to) {
   let cmd = `git log `;
 
   if (from && to) {
-    cmd += `${from}..${to}`;
+    cmd += `${from}..${to} `;
   }
 
   cmd += "--pretty='@begin@%H\t%an\t%ae\t%aI\t%B\t' ";
@@ -64,11 +66,26 @@ function parseCommit(text) {
   return payload;
 }
 
-async function fetchLatestRelease() {
-  let stdout = await cli.execute(["releases", "list"]);
+async function fetchLatestReleaseCommit() {
+  let releases = await fetch(
+    `https://sentry.io/api/0/organizations/npbee/releases/`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.SENTRY_AUTH_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+    }
+  ).then(resp => {
+    if (resp.ok) {
+      return resp.json();
+    } else {
+      throw new Error(resp.statusText);
+    }
+  });
+  let releaseWithCommit = releases.find(release => release.lastCommit);
 
-  if (stdout) {
-    // todo
+  if (releaseWithCommit) {
+    return releaseWithCommit.lastCommit.id;
   }
 }
 
@@ -79,7 +96,6 @@ async function createRelease(version, commits) {
     commits,
   };
 
-  console.log(JSON.stringify(body, null, 2));
   return await fetch(`https://sentry.io/api/0/organizations/npbee/releases/`, {
     method: "POST",
     headers: {
@@ -91,20 +107,29 @@ async function createRelease(version, commits) {
     if (resp.ok) {
       return resp.json();
     } else {
-      console.error(resp);
       throw new Error(resp.statusText);
     }
   });
 }
 
 async function run() {
-  let latestRelease = await fetchLatestRelease();
-  let newVersion = await cli.releases.proposeVersion();
-  let commits = await parseLog(latestRelease, newVersion);
+  let { stdout } = await exec("git log --pretty='%H' -n 1");
+  let latestReleaseCommit = await fetchLatestReleaseCommit();
+  let version = `releases-example@${pkg.version}`;
+  let commits = await parseLog(latestReleaseCommit, stdout.trim());
 
-  let response = await createRelease(newVersion, commits);
+  let release = await createRelease(version, commits);
 
-  console.log(response);
+  console.log("Release created");
+
+  await cli.releases.uploadSourceMaps(version, {
+    rewrite: true,
+    include: ["src"],
+  });
+
+  await cli.releases.finalize(release.version);
+
+  console.log("Done!");
 }
 
 run().catch(err => {
