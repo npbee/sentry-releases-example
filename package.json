@@ -1,11 +1,12 @@
 {
   "name": "sentry-example",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
     "dev": "parcel ./src/index.html",
-    "build": "parcel build ./src/index.html"
+    "build": "parcel build ./src/index.html && npm run sentry",
+    "sentry": "node ./sentry"
   },
   "devDependencies": {
     "@sentry/browser": "^5.12.1",
