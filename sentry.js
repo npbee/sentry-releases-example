@@ -113,10 +113,10 @@ async function createRelease(version, commits) {
 }
 
 async function run() {
-  let { stdout } = await exec("git log --pretty='%H' -n 1");
+  // let { stdout } = await exec("git log --pretty='%H' -n 1");
   let latestReleaseCommit = await fetchLatestReleaseCommit();
   let version = `releases-example@${pkg.version}`;
-  let commits = await parseLog(latestReleaseCommit, stdout.trim());
+  let commits = await parseLog(latestReleaseCommit, "HEAD");
 
   let release = await createRelease(version, commits);
 
