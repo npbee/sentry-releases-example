@@ -129,7 +129,14 @@ async function run() {
 
   await cli.releases.finalize(release.version);
 
-  await cli.execute(["releases", "deploys", "new", "-e", "prod"]);
+  await cli.execute([
+    "releases",
+    "deploys",
+    release.version,
+    "new",
+    "-e",
+    "prod",
+  ]);
 
   console.log("Done!");
 }
