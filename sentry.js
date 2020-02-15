@@ -13,7 +13,7 @@ async function parseLog(from, to) {
   let cmd = `git log `;
 
   if (from && to) {
-    cmd += `${from}..${to}`;
+    cmd += `${from}..${to} `;
   }
 
   cmd += "--pretty='@begin@%H\t%an\t%ae\t%aI\t%B\t' ";
