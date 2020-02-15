@@ -1,11 +1,20 @@
+require("dotenv").config();
+
+let fetch = require("node-fetch");
+let SentryCli = require("@sentry/cli");
 let { promisify } = require("util");
 
 let exec = promisify(require("child_process").exec);
+let cli = new SentryCli();
 
-async function log(from, to) {
+async function parseLog(from, to) {
   let cmd = `git log `;
 
-  cmd += "--pretty='@begin@%H\t%an\t%ae\t%ai\t%B\t' ";
+  if (from && to) {
+    cmd += `${from}..${to}`;
+  }
+
+  cmd += "--pretty='@begin@%H\t%an\t%ae\t%aI\t%B\t' ";
   cmd += "--name-status";
 
   let { stdout, stderr } = await exec(cmd);
@@ -17,12 +26,12 @@ async function log(from, to) {
 
   let commits = stdout.split("@begin@").slice(1);
 
-  let parsed = commits.map(commit => parse(commit));
+  let parsed = commits.map(commit => parseCommit(commit));
 
-  console.log(JSON.stringify(parsed, null, 2));
+  return parsed;
 }
 
-function parse(text) {
+function parseCommit(text) {
   let [id, authorName, authorEmail, timestamp, message, ...rest] = text.split(
     "\t"
   );
@@ -44,7 +53,7 @@ function parse(text) {
 
   let payload = {
     patch_set: patchSet,
-    respository: "test/test-repo",
+    respository: "npbee/sentry-releases-example",
     author_name: authorName,
     author_email: authorEmail,
     timestamp,
@@ -55,4 +64,50 @@ function parse(text) {
   return payload;
 }
 
-log();
+async function fetchLatestRelease() {
+  let stdout = await cli.execute(["releases", "list"]);
+
+  if (stdout) {
+    // todo
+  }
+}
+
+async function createRelease(version, commits) {
+  let body = {
+    version,
+    projects: [process.env.SENTRY_PROJECT],
+    commits,
+  };
+
+  console.log(JSON.stringify(body, null, 2));
+  return await fetch(`https://sentry.io/api/0/organizations/npbee/releases/`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.SENTRY_AUTH_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  }).then(resp => {
+    if (resp.ok) {
+      return resp.json();
+    } else {
+      console.error(resp);
+      throw new Error(resp.statusText);
+    }
+  });
+}
+
+async function run() {
+  let latestRelease = await fetchLatestRelease();
+  let newVersion = await cli.releases.proposeVersion();
+  let commits = await parseLog(latestRelease, newVersion);
+
+  let response = await createRelease(newVersion, commits);
+
+  console.log(response);
+}
+
+run().catch(err => {
+  console.error(err);
+  process.exit(1);
+});
