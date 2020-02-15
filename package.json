@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "devDependencies": {
-    "@sentry/cli": "^1.51.0"
+    "@sentry/cli": "^1.51.0",
+    "gitlog": "^3.1.2"
   }
 }
