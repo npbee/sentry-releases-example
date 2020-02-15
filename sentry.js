@@ -13,7 +13,7 @@ async function parseLog(from, to) {
   let cmd = `git log `;
 
   if (from && to) {
-    cmd += `${from}.. `;
+    cmd += `${from}..${to}`;
   }
 
   cmd += "--pretty='@begin@%H\t%an\t%ae\t%aI\t%B\t' ";
@@ -128,6 +128,8 @@ async function run() {
   });
 
   await cli.releases.finalize(release.version);
+
+  await cli.execute(['releases', 'deploys', 'new', '-e', 'prod'])
 
   console.log("Done!");
 }
