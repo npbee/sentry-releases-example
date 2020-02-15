@@ -5,12 +5,21 @@ let exec = promisify(require("child_process").exec);
 async function log(from, to) {
   let cmd = `git log `;
 
-  cmd += "--pretty='%H\t%an\t%ae\t%ai\t%B\t' ";
+  cmd += "--pretty='@begin@%H\t%an\t%ae\t%ai\t%B\t' ";
   cmd += "--name-status";
 
   let { stdout, stderr } = await exec(cmd);
 
-  let parsed = parse(stdout);
+  if (stderr) {
+    console.error(stderr);
+    process.exit(1);
+  }
+
+  let commits = stdout.split("@begin@").slice(1);
+
+  let parsed = commits.map(commit => parse(commit));
+
+  console.log(JSON.stringify(parsed, null, 2));
 }
 
 function parse(text) {
@@ -33,19 +42,17 @@ function parse(text) {
     });
   }
 
-  console.log(patchSet);
+  let payload = {
+    patch_set: patchSet,
+    respository: "test/test-repo",
+    author_name: authorName,
+    author_email: authorEmail,
+    timestamp,
+    message,
+    id,
+  };
+
+  return payload;
 }
 
 log();
-// const gitlog = require("gitlog");
-
-// const options = {
-//   repo: __dirname,
-//   number: 20,
-//   fields: ["hash", "abbrevHash", "subject", "authorName", "authorDateRel"],
-//   execOptions: { maxBuffer: 1000 * 1024 },
-// };
-
-// // Synchronous
-// let commits = gitlog(options);
-// console.log(commits);
