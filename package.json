@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "parcel ./src/index.html",
     "build": "parcel build ./src/index.html && npm run sentry",
-    "sentry": "node ./sentry"
+    "sentry": "node ./sentry",
+    "sentry-info": "sentry-cli info"
   },
   "devDependencies": {
     "@sentry/browser": "^5.12.1",
