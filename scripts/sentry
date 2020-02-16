@@ -2,7 +2,9 @@
 
 set -e
 
-git remote add origin $REPOSITORY_URL
+if ! git ls-remote --exit-code origin; then
+  git remote add origin $REPOSITORY_URL
+fi
 
 # Grab the version from package.json.
 VERSION=$(node scripts/get-version.js)
@@ -18,7 +20,7 @@ npx parcel build src/index.html
 # Upload the source maps
 npx sentry-cli releases files $VERSION upload-sourcemaps src --rewrite
 
-npx sentry-cli releases set-commits --auto $VERSION --log-level debug
+npx sentry-cli releases set-commits --auto $VERSION
 
 # Finalize the release and mark it deployed
 npx sentry-cli releases finalize $VERSION
