@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "parcel ./src/index.html",
-    "build": "parcel build ./src/index.html && node ./sentry.js"
+    "ci": "./scripts/sentry"
   },
   "devDependencies": {
     "@sentry/browser": "^5.12.1",

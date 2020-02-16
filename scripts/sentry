@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Grab the version from package.json.
+VERSION=$(node scripts/get-version.js)
+
+echo "Building version: $VERSION"
+
+# Create the release in Sentry
+npx sentry-cli releases new $VERSION
+
+# Build our assets
+npx parcel build src/index.html
+
+# Upload the source maps
+npx sentry-cli releases files $VERSION upload-sourcemaps src --rewrite
+
+npx sentry-cli releases set-commits --auto $VERSION
+
+# Finalize the release and mark it deployed
+npx sentry-cli releases finalize $VERSION
+npx sentry-cli releases deploys $VERSION new -e prod
