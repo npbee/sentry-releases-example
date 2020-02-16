@@ -5,7 +5,10 @@
   "license": "MIT",
   "scripts": {
     "dev": "parcel ./src/index.html",
-    "ci": "./scripts/sentry"
+    "build": "parcel build src/index.html",
+    "ci-custom": "node ./scripts/sentry-custom.js",
+    "ci-cli": "./scripts/sentry",
+    "ci": "npm run build && npm run ci-custom"
   },
   "devDependencies": {
     "@sentry/browser": "^5.12.1",
