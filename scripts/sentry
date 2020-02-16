@@ -2,6 +2,8 @@
 
 set -e
 
+git remote add origin $REPOSITORY_URL
+
 # Grab the version from package.json.
 VERSION=$(node scripts/get-version.js)
 
