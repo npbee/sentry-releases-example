@@ -98,8 +98,6 @@ async function createRelease(version, commits) {
     commits,
   };
 
-  console.log(JSON.stringify(body, null, 2));
-
   return await fetch(`https://sentry.io/api/0/organizations/npbee/releases/`, {
     method: "POST",
     headers: {
@@ -126,10 +124,10 @@ async function run() {
 
   console.log("Release created");
 
-  // await cli.releases.uploadSourceMaps(version, {
-  //   rewrite: true,
-  //   include: ["src"],
-  // });
+  await cli.releases.uploadSourceMaps(version, {
+    rewrite: true,
+    include: ["src"],
+  });
 
   await cli.releases.finalize(release.version);
 
