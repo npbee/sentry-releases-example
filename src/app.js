@@ -7,7 +7,7 @@ Sentry.init({
 
 function runSomethingAndThrowError() {
   return Promise.resolve(1).then(() => {
-    console.log("fixed");
+    throw new Error("Boom");
   });
 }
 
