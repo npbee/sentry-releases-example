@@ -1,11 +1,11 @@
 {
   "name": "sentry-example",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
     "dev": "parcel ./src/index.html",
-    "build": "parcel build ./src/index.html --no-source-maps",
+    "build": "parcel build ./src/index.html && node ./sentry.js",
     "sentry": "node ./sentry",
     "sentry-info": "sentry-cli info"
   },
