@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Grab the version from package.json.
 VERSION=$(node scripts/get-version.js)
 
