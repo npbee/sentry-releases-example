@@ -2,10 +2,6 @@
 
 set -e
 
-if ! git ls-remote --exit-code origin; then
-  git remote add origin $REPOSITORY_URL
-fi
-
 # Grab the version from package.json.
 VERSION=$(node scripts/get-version.js)
 
