@@ -19,6 +19,8 @@ async function parseLog(from, to) {
   cmd += "--pretty='@begin@%H\t%an\t%ae\t%aI\t%B\t' ";
   cmd += "--name-status";
 
+  console.log("Git command: ", cmd);
+
   let { stdout, stderr } = await exec(cmd);
 
   if (stderr) {
@@ -95,6 +97,8 @@ async function createRelease(version, commits) {
     projects: [process.env.SENTRY_PROJECT],
     commits,
   };
+
+  console.log(JSON.stringify(body, null, 2));
 
   return await fetch(`https://sentry.io/api/0/organizations/npbee/releases/`, {
     method: "POST",
