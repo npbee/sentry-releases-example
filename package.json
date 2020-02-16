@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "parcel ./src/index.html",
-    "build": "parcel build ./src/index.html && node ./sentry.js",
+    "xbuild": "parcel build ./src/index.html && node ./sentry.js",
+    "build": "sentry-cli info",
     "sentry": "node ./sentry",
     "sentry-info": "sentry-cli info"
   },
