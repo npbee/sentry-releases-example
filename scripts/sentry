@@ -3,7 +3,7 @@
 set -e
 
 # Grab the version from package.json.
-VERSION=$(node scripts/get-version.js)
+VERSION="releases-example@$(node scripts/get-version.js)"
 
 echo "Building version: $VERSION"
 
