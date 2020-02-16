@@ -45,13 +45,20 @@ function parseCommit(text) {
     .split("\n");
 
   let patchSet = [];
+  let gitTypeToSentryType = gitType => {
+    if (gitType.startsWith("R") || gitType.startsWith("C")) {
+      return "M";
+    }
+
+    return gitType;
+  };
 
   for (let file of files) {
     let [type, path] = file.split("\t");
 
     patchSet.push({
       path,
-      type,
+      type: gitTypeToSentryType(type),
     });
   }
 
