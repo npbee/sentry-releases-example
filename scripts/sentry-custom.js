@@ -28,7 +28,7 @@ async function run() {
   let latestReleaseCommit = await fetchLatestReleaseCommit();
   let commits = await parseLog(latestReleaseCommit, "HEAD");
 
-  let release = await createRelease(version, commits);
+  await createRelease(version, commits);
 
   console.log("Release created");
 
@@ -37,16 +37,9 @@ async function run() {
     include: ["src"],
   });
 
-  await cli.releases.finalize(release.version);
+  await cli.releases.finalize(version);
 
-  await cli.execute([
-    "releases",
-    "deploys",
-    release.version,
-    "new",
-    "-e",
-    "prod",
-  ]);
+  await cli.execute(["releases", "deploys", version, "new", "-e", "prod"]);
 
   console.log("Done!");
 }
@@ -154,7 +147,7 @@ async function createRelease(version, commits) {
 
 async function callApi(path, ...options) {
   return await fetch(
-    `https://sentry.io/api/0/organizations/npbee/${path}`,
+    `https://sentry.io/api/0/organizations/npbeep/${path}`,
     Object.assign({}, options, {
       headers: {
         Authorization: `Bearer ${process.env.SENTRY_AUTH_TOKEN}`,
