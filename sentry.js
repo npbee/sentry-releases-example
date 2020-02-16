@@ -122,10 +122,10 @@ async function run() {
 
   console.log("Release created");
 
-  await cli.releases.uploadSourceMaps(version, {
-    rewrite: true,
-    include: ["src"],
-  });
+  // await cli.releases.uploadSourceMaps(version, {
+  //   rewrite: true,
+  //   include: ["src"],
+  // });
 
   await cli.releases.finalize(release.version);
 
