@@ -14,7 +14,7 @@ npx sentry-cli releases new $VERSION
 npx parcel build src/index.html
 
 # Upload the source maps
-npx sentry-cli releases files $VERSION upload-sourcemaps src --rewrite
+npx sentry-cli releases files $VERSION upload-sourcemaps dist --rewrite
 
 npx sentry-cli releases set-commits --auto $VERSION
 
