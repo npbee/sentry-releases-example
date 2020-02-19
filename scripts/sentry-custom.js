@@ -34,7 +34,7 @@ async function run() {
 
   await cli.releases.uploadSourceMaps(version, {
     rewrite: true,
-    include: ["src"],
+    include: ["dist"],
   });
 
   await cli.releases.finalize(version);
