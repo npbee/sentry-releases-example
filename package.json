@@ -14,7 +14,7 @@
     "@sentry/browser": "^5.12.1",
     "@sentry/cli": "^1.51.0",
     "dotenv": "^8.2.0",
-    "gitlog": "^3.1.2",
+    "gitlog": "^4.0.4",
     "node-fetch": "^2.6.0",
     "parcel-bundler": "^1.12.4"
   }
